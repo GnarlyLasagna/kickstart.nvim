@@ -1,6 +1,6 @@
 --[[
 
-=====================================================================
+j====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
 ========                                    .-----.          ========
@@ -157,6 +157,11 @@ vim.opt.scrolloff = 10
 
 -- Highlights the 120th column, helping to maintain code line length standards
 vim.opt.colorcolumn = '120'
+
+-- Set the number of spaces that a <Tab> counts for
+vim.o.tabstop = 2
+-- Set the number of spaces to use for each step of (auto)indent
+vim.o.shiftwidth = 2
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -460,10 +465,10 @@ require('lazy').setup({
       -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
       -- and elegantly composed help section, `:help lsp-vs-treesitter`
 
-      --  This function gets run when an LSP attaches to a particular buffer.
-      --    That is to say, every time a new file is opened that is associated with
-      --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
-      --    function will be executed to configure the current buffer
+      -- This function gets run when an LSP attaches to a particular buffer.
+      -- That is to say, every time a new file is opened that is associated with
+      -- an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
+      -- function will be executed to configure the current buffer
       vim.api.nvim_create_autocmd('LspAttach', {
         group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
         callback = function(event)
@@ -602,8 +607,35 @@ require('lazy').setup({
             },
           },
         },
-      }
 
+        -- Add omnisharp for C# language support
+        omnisharp = {
+          cmd = { 'omnisharp', '--languageserver', '--hostPID', tostring(vim.fn.getpid()) },
+          filetypes = { 'cs' },
+          settings = {
+            -- Example settings for omnisharp, adjust as needed
+            OmniSharp = {
+              EnableEditorConfigSupport = true,
+              EnableRoslynAnalyzers = true,
+            },
+          },
+        },
+
+        gopls = {
+          cmd = { 'gopls' },
+          filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+          root_dir = require('lspconfig.util').root_pattern('go.work', 'go.mod', '.git'),
+          settings = {
+            gopls = {
+              analyses = {
+                unusedparams = true,
+                shadow = true,
+              },
+              staticcheck = true,
+            },
+          },
+        },
+      }
       -- Ensure the servers and tools above are installed
       --  To check the current status of installed tools and/or manually install
       --  other tools, you can run
@@ -617,6 +649,8 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'omnisharp', -- Ensure omnisharp is installed
+        'gopls', -- Ensure gopls is installed
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
