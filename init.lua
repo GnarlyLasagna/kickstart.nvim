@@ -1,6 +1,6 @@
 --[[
 
-j====================================================================
+=====================================================================
 ==================== READ THIS BEFORE CONTINUING ====================
 =====================================================================
 ========                                    .-----.          ========
@@ -590,7 +590,19 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
+        tsserver = {
+          cmd = { 'typescript-language-server', '--stdio' },
+          filetypes = { 'typescript', 'typescriptreact', 'typescript.tsx', 'javascript', 'javascriptreact', 'javascript.jsx' },
+          root_dir = require('lspconfig.util').root_pattern('package.json', 'tsconfig.json', 'jsconfig.json', '.git'),
+          settings = {
+            typescript = {
+              -- Configure TypeScript settings here
+            },
+            javascript = {
+              -- Configure JavaScript settings here
+            },
+          },
+        },
         --
 
         lua_ls = {
@@ -651,6 +663,7 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
         'omnisharp', -- Ensure omnisharp is installed
         'gopls', -- Ensure gopls is installed
+        'typescript-language-server', -- Ensure typescript-language-server is installed
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -845,6 +858,9 @@ require('lazy').setup({
   },
 
   -- Highlight todo, notes, etc in comments
+  -- FIXME: error message
+  -- TODO: testing message
+  -- NOTE: testing messsage
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
   { -- Collection of various small independent plugins/modules
